@@ -2,17 +2,67 @@ const repository = require("../repositories/user-repository");
 const authService = require("../services/auth-service");
 const md5 = require("md5");
 
+exports.create = async (req, res) => {
+    try {
+        const { nome, celular, senha, perguntaSeguranca, respostaSeguranca } = req.body;
+        var user = await repository.create({
+            name: nome,
+            phone: celular,
+            password: md5(senha + global.SALT_KEY),
+            securityQuestion: perguntaSeguranca,
+            securityAnswer: respostaSeguranca
+        });
+
+        res.status(201).json({
+            id: user.id,
+            mensagem: "Usuário cadastrado com sucesso!"
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensagem: "Sua requisição falhou!",
+            erro: error.message
+        });
+    }
+}
+
+exports.addAccounts = async (req, res) => {
+    debugger;
+    try {
+        const { id, contas } = req.body;
+
+        const accounts = [];
+        contas.forEach(conta => {
+            accounts.push({
+                name: conta.nome,
+                email: conta.email,
+                image: conta.imagem
+            });            
+        });
+
+        await repository.addAccounts(id, accounts);
+
+        res.status(200).json({
+            mensagem: "Contas adicionadas com sucesso!"
+        });
+    } catch (error) {
+        res.status(500).json({
+            mensagem: "Sua requisição falhou!",
+            erro: error.message
+        });
+    }
+}
+
 exports.authenticate = async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        const { celular, senha } = req.body;
         const user = await repository.getByPhoneAndPassword({
-            phone: phone,
-            password: md5(password + global.SALT_KEY)
+            phone: celular,
+            password: md5(senha + global.SALT_KEY)
         });
 
         if (!user) {
             res.status(404).json({
-                message: "User or Password incorrect"
+                mensagem: "Usuário ou senha incorretos!"
             });
             return;
         }
@@ -20,40 +70,29 @@ exports.authenticate = async (req, res) => {
         const token = authService.generateToken({
             id: user.id,
             phone: user.phone,
-            nome: user.name
+            name: user.name
         });
+
+        const contas = [];
+        user.accounts.forEach(account => {
+            contas.push({
+                nome: account.name,
+                email: account.email,
+                imagem: account.image
+            });
+        })
 
         res.status(200).json({
             id: user.id,
             nome: user.name,
-            phone: user.phone,
+            contas: contas,
             token: token
         });
 
     } catch (error) {
         res.status(500).send({
-            message: "Your request has failed",
-            data: error.message
-        });
-    }
-}
-
-exports.create = async (req, res) => {
-    try {
-        const { name, phone, password } = req.body;
-        await repository.create({
-            name: name,
-            phone: phone,
-            password: md5(password + global.SALT_KEY)
-        });
-
-        res.status(201).json({
-            message: "New user created"
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Your request has failed",
-            data: error.message
+            mensagem: "Sua requisição falhou!",
+            erro: error.message
         });
     }
 }
