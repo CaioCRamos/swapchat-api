@@ -42,7 +42,7 @@ exports.addAccounts = async (req, res) => {
                 const buffer = Buffer.from(matches[2], 'base64');
                 fileName = guid.raw() + ".png";
 
-                fs.writeFile(`./images/${fileName}`, buffer, 'base64', function (err) {
+                fs.writeFileSync(`./images/${fileName}`, buffer, 'base64', function (err) {
                     console.log(err);
                 });
             }
@@ -69,7 +69,7 @@ exports.addAccounts = async (req, res) => {
 
 exports.getImage = (req, res) => {
     const { filename } = req.params;
-        
+
     const file = path.join("./images", filename);
     const s = fs.createReadStream(file);
     s.on('open', function () {
@@ -104,7 +104,7 @@ exports.authenticate = async (req, res) => {
             contas.push({
                 nome: account.name,
                 email: account.email,
-                imagem: account.image !== "" 
+                imagem: account.image !== ""
                     ? "http://localhost:8080/v1/users/accounts/image/" + account.image
                     : ""
             });
@@ -115,6 +115,43 @@ exports.authenticate = async (req, res) => {
             nome: user.name,
             contas: contas,
             token: token
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            mensagem: "Sua requisição falhou!",
+            erro: error.message
+        });
+    }
+}
+
+exports.getById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await repository.getById(id);
+
+        if (!user) {
+            res.status(404).json({
+                mensagem: "Usuário não encontrado!"
+            });
+            return;
+        }
+
+        const contas = [];
+        user.accounts.forEach(account => {
+            contas.push({
+                nome: account.name,
+                email: account.email,
+                imagem: account.image !== ""
+                    ? "http://localhost:8080/v1/users/accounts/image/" + account.image
+                    : ""
+            });
+        })
+
+        res.status(200).json({
+            id: user.id,
+            nome: user.name,
+            contas: contas
         });
 
     } catch (error) {

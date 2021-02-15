@@ -22,3 +22,7 @@ exports.getByPhoneAndPassword = async (data) => {
         password: data.password
     }, "id name accounts");
 }
+
+exports.getById = async (id) => {
+    return await User.findById(id, "id name accounts");
+}

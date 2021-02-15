@@ -16,13 +16,13 @@ exports.authorize = (req, res, next) => {
 
     if (!token) {
         res.status(401).json({
-            message: "You don't have access"
+            message: "Você não possui acesso"
         });
     } else {
         jwt.verify(token, global.SALT_KEY, (error, decoded) => {
             if (error) {
                 res.status(401).json({
-                    message: "You don't have access"
+                    message: "Você não possui acesso"
                 });
             } else {
                 next();
