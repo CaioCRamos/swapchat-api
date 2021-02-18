@@ -2,6 +2,8 @@ const http = require("http");
 const app = require("./src/app");
 const debug = require("debug")("swapchat:server");
 
+require("dotenv").config();
+
 const port = normalizePort(process.env.PORT || "8080");
 app.set("port", port);
 

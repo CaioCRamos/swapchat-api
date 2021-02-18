@@ -24,11 +24,11 @@ exports.getByPhoneAndPassword = async (data) => {
 }
 
 exports.getById = async (id) => {
-    return await User.findById(id, "id name accounts");
+    return await User.findById(id, "id name phone accounts");
 }
 
 exports.getByPhone = async (phone) => {
     return await User.findOne({
         phone: phone
-    }, "id name accounts");
+    }, "id name phone accounts");
 }

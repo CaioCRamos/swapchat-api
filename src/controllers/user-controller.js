@@ -105,7 +105,7 @@ exports.authenticate = async (req, res) => {
                 nome: account.name,
                 email: account.email,
                 imagem: account.image !== ""
-                    ? "http://localhost:8080/v1/users/accounts/image/" + account.image
+                    ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
                     : ""
             });
         })
@@ -143,7 +143,7 @@ exports.getById = async (req, res) => {
                 nome: account.name,
                 email: account.email,
                 imagem: account.image !== ""
-                    ? "http://localhost:8080/v1/users/accounts/image/" + account.image
+                    ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
                     : ""
             });
         })
