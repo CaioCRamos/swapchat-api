@@ -42,6 +42,12 @@ exports.addAccounts = async (req, res) => {
                 const buffer = Buffer.from(matches[2], 'base64');
                 fileName = guid.raw() + ".png";
 
+                var dir = './images';
+
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+
                 fs.writeFileSync(`./images/${fileName}`, buffer, 'base64', function (err) {
                     console.log(err);
                 });
