@@ -26,3 +26,9 @@ exports.getByPhoneAndPassword = async (data) => {
 exports.getById = async (id) => {
     return await User.findById(id, "id name accounts");
 }
+
+exports.getByPhone = async (phone) => {
+    return await User.findOne({
+        phone: phone
+    }, "id name accounts");
+}

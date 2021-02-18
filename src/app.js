@@ -20,4 +20,7 @@ app.use(function (req, res, next) {
 const usersRoute = require("./routes/user-route");
 app.use("/v1/users", usersRoute);
 
+const contactsRoute = require("./routes/contact-route");
+app.use("/v1/contacts", contactsRoute);
+
 module.exports = app;
