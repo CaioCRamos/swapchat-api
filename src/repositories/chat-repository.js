@@ -15,7 +15,7 @@ exports.getAll = async (userAccountId) => {
                 { userAccount1: objId },
                 { userAccount2: objId }
             ]
-        })
-        .populate("userAccount1", "id name email image")
-        .populate("userAccount2", "id name email image");
+        });
+        // .populate("userAccount1", "id name email image")
+        // .populate("userAccount2", "id name email image");
 }

@@ -1,5 +1,4 @@
 const userRepository = require("../repositories/user-repository");
-const accountRepository = require("../repositories/account-repository");
 const contactRepository = require("../repositories/contact-repository");
 
 exports.getAll = async (userAccountId) => {
@@ -10,8 +9,7 @@ exports.getAll = async (userAccountId) => {
         const user = await userRepository.getByPhone(contact.phone);
 
         if (user !== null) {
-            const accounts = await accountRepository.getByUserId(user.id);
-            accounts.forEach(account => {
+            user.accounts.forEach(account => {
                 result.push({
                     id: account.id,
                     nome: `${user.name} (${account.name})`,

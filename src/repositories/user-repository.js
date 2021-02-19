@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const mongoose = require("mongoose");
 
 exports.create = async (data) => {
     const user = new User(data);
@@ -33,8 +34,10 @@ exports.getByPhone = async (phone) => {
     }, "id name phone accounts");
 }
 
-exports.getByAccountId = async  (accountId) => {
+exports.getByAccountId = async  (userAccountId) => {
+    var objId = new mongoose.Types.ObjectId(userAccountId);
+
     return await User.findOne({
-        "accounts.id": ObjectId(accountId)
+        "accounts._id": objId
     });
 }

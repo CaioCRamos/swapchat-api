@@ -6,22 +6,26 @@ exports.getAll = async (userAccountId) => {
     const chats = await chatRepository.getAll(userAccountId);
 
     for (const chat of chats) {
-        const result = {
+        let result = {
             id: chat.id
+        };
+
+        let userAccountToSearch = chat.userAccount1.toString() === userAccountId
+            ? chat.userAccount2.toString()
+            : chat.userAccount1.toString();
+        
+        const user = await userRepository.getByAccountId(userAccountToSearch);
+
+        if (user !== null) {
+            const account = user.accounts.find(a => a.id === userAccountToSearch);
+
+            result.nome = `${user.name} (${account.name})`;
+            result.image = account.image !== ""
+                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
+                : "";
         }
 
-        if (chat.userAccount1.id === userAccountId) {
-            result.nome = chat.userAccount2.name;
-            result.image = chat.userAccount2.image !== ""
-                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${chat.userAccount2.image}`
-                : "";
-        } else {
-            result.nome = chat.userAccount1.name;
-            result.image = chat.userAccount1.image !== ""
-                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${chat.userAccount1.image}`
-                : "";
-        }
-
+        result.ultimaMensagem = "";
         result.mensagens = [];
         chat.messages.forEach(message => {
             result.mensagens.push({

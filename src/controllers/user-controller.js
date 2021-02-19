@@ -1,5 +1,4 @@
-const userRepository = require("../repositories/user-repository");
-const accountRepository = require("../repositories/account-repository");
+const repository = require("../repositories/user-repository");
 const authService = require("../services/auth-service");
 
 const md5 = require("md5");
@@ -10,7 +9,7 @@ const path = require("path");
 exports.create = async (req, res) => {
     try {
         const { nome, celular, senha, perguntaSeguranca, respostaSeguranca } = req.body;
-        var user = await userRepository.create({
+        var user = await repository.create({
             name: nome,
             phone: celular,
             password: md5(senha + global.SALT_KEY),
@@ -56,16 +55,13 @@ exports.addAccounts = async (req, res) => {
             }
 
             accounts.push({
-                user: id,
                 name: conta.nome,
                 email: conta.email,
                 image: fileName
             });
         });
 
-        for (const account of accounts) {
-            await accountRepository.create(account);
-        }
+        await repository.addAccounts(id, accounts);
 
         res.status(200).json({
             mensagem: "Contas adicionadas com sucesso!"
@@ -92,7 +88,7 @@ exports.getImage = (req, res) => {
 exports.authenticate = async (req, res) => {
     try {
         const { celular, senha } = req.body;
-        const user = await userRepository.getByPhoneAndPassword({
+        const user = await repository.getByPhoneAndPassword({
             phone: celular,
             password: md5(senha + global.SALT_KEY)
         });
@@ -110,12 +106,10 @@ exports.authenticate = async (req, res) => {
             name: user.name
         });
 
-        const contas = await getAccounts(user.id);
-
         res.status(200).json({
             id: user.id,
             nome: user.name,
-            contas: contas,
+            contas: getAccounts(user),
             token: token
         });
 
@@ -131,7 +125,7 @@ exports.getById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const user = await userRepository.getById(id);
+        const user = await repository.getById(id);
 
         if (!user) {
             res.status(404).json({
@@ -140,12 +134,10 @@ exports.getById = async (req, res) => {
             return;
         }
 
-        const contas = await getAccounts(id);
-
         res.status(200).json({
             id: user.id,
             nome: user.name,
-            contas: contas
+            contas: getAccounts(user)
         });
 
     } catch (error) {
@@ -156,11 +148,9 @@ exports.getById = async (req, res) => {
     }
 }
 
-async function getAccounts(userId) {
-    const accounts = await accountRepository.getByUserId(userId);
-
+function getAccounts(user) {
     const contas = [];
-    accounts.forEach(account => {
+    user.accounts.forEach(account => {
         contas.push({
             id: account.id,
             nome: account.name,
