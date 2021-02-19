@@ -32,3 +32,9 @@ exports.getByPhone = async (phone) => {
         phone: phone
     }, "id name phone accounts");
 }
+
+exports.getByAccountId = async  (accountId) => {
+    return await User.findOne({
+        "accounts.id": ObjectId(accountId)
+    });
+}

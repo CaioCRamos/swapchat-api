@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-    userAccount: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Account',
+    user: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
         required: true
     },
     name: {
@@ -12,12 +12,17 @@ const schema = new mongoose.Schema({
         trim: true,
         maxlength: 100
     },
-    phone: {
+    email: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
-        maxlength: 25
+        maxlength: 100
+    },
+    image: {
+        type: String,
+        required: false,
+        trim: true
     }
 });
 
-module.exports = mongoose.model("Contact", schema);
+module.exports = mongoose.model("Account", schema);

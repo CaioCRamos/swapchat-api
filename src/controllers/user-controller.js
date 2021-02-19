@@ -1,5 +1,7 @@
-const repository = require("../repositories/user-repository");
+const userRepository = require("../repositories/user-repository");
+const accountRepository = require("../repositories/account-repository");
 const authService = require("../services/auth-service");
+
 const md5 = require("md5");
 const fs = require("fs");
 const guid = require("guid");
@@ -8,7 +10,7 @@ const path = require("path");
 exports.create = async (req, res) => {
     try {
         const { nome, celular, senha, perguntaSeguranca, respostaSeguranca } = req.body;
-        var user = await repository.create({
+        var user = await userRepository.create({
             name: nome,
             phone: celular,
             password: md5(senha + global.SALT_KEY),
@@ -54,13 +56,16 @@ exports.addAccounts = async (req, res) => {
             }
 
             accounts.push({
+                user: id,
                 name: conta.nome,
                 email: conta.email,
                 image: fileName
             });
         });
 
-        await repository.addAccounts(id, accounts);
+        for (const account of accounts) {
+            await accountRepository.create(account);
+        }
 
         res.status(200).json({
             mensagem: "Contas adicionadas com sucesso!"
@@ -87,7 +92,7 @@ exports.getImage = (req, res) => {
 exports.authenticate = async (req, res) => {
     try {
         const { celular, senha } = req.body;
-        const user = await repository.getByPhoneAndPassword({
+        const user = await userRepository.getByPhoneAndPassword({
             phone: celular,
             password: md5(senha + global.SALT_KEY)
         });
@@ -105,16 +110,7 @@ exports.authenticate = async (req, res) => {
             name: user.name
         });
 
-        const contas = [];
-        user.accounts.forEach(account => {
-            contas.push({
-                nome: account.name,
-                email: account.email,
-                imagem: account.image !== ""
-                    ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
-                    : ""
-            });
-        })
+        const contas = await getAccounts(user.id);
 
         res.status(200).json({
             id: user.id,
@@ -134,7 +130,8 @@ exports.authenticate = async (req, res) => {
 exports.getById = async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await repository.getById(id);
+
+        const user = await userRepository.getById(id);
 
         if (!user) {
             res.status(404).json({
@@ -143,16 +140,7 @@ exports.getById = async (req, res) => {
             return;
         }
 
-        const contas = [];
-        user.accounts.forEach(account => {
-            contas.push({
-                nome: account.name,
-                email: account.email,
-                imagem: account.image !== ""
-                    ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
-                    : ""
-            });
-        })
+        const contas = await getAccounts(id);
 
         res.status(200).json({
             id: user.id,
@@ -166,4 +154,22 @@ exports.getById = async (req, res) => {
             erro: error.message
         });
     }
+}
+
+async function getAccounts(userId) {
+    const accounts = await accountRepository.getByUserId(userId);
+
+    const contas = [];
+    accounts.forEach(account => {
+        contas.push({
+            id: account.id,
+            nome: account.name,
+            email: account.email,
+            imagem: account.image !== ""
+                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
+                : ""
+        });
+    })
+
+    return contas;
 }

@@ -5,12 +5,8 @@ exports.create = async (data) => {
     await contact.save();
 }
 
-exports.getAllByUserId = async (userId) => {
+exports.getAllByUserId = async (userAccountId) => {
     return await Contact.find({
-        user: userId
+        userAccount: userAccountId
     }, "id name phone");
-}
-
-exports.getAll = async () => {
-    return await Contact.find();
 }

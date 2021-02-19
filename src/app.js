@@ -23,4 +23,7 @@ app.use("/v1/users", usersRoute);
 const contactsRoute = require("./routes/contact-route");
 app.use("/v1/contacts", contactsRoute);
 
+const chatsRoute = require("./routes/chat-route");
+app.use("/v1/chats", chatsRoute);
+
 module.exports = app;

@@ -1,14 +1,12 @@
 const repository = require("../repositories/contact-repository");
 const contactService = require("../services/contact-service");
-const authService = require("../services/auth-service");
 
 exports.create = async (req, res) => {
     try {
-        const { nome, celular } = req.body;
-        const { id } = authService.getUserData(req);
+        const { idContaUsuario, nome, celular } = req.body;
 
         await repository.create({
-            user: id,
+            userAccount: idContaUsuario,
             name: nome,
             phone: celular
         });
@@ -26,9 +24,9 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        const { id } = authService.getUserData(req);
+        const { userAccountId } = req.params;
 
-        const result = await contactService.getAll(id);
+        const result = await contactService.getAll(userAccountId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({

@@ -30,26 +30,7 @@ const schema = new mongoose.Schema({
         required: false,
         trim: true,
         maxlength: 100
-    },
-    accounts: [{
-        name: {
-            type: String,
-            required: true,
-            trim: true,
-            maxlength: 100
-        },
-        email: {
-            type: String,
-            required: false,
-            trim: true,
-            maxlength: 100
-        },
-        image: {
-            type: String,
-            required: false,
-            trim: true
-        }
-    }]
+    }
 });
 
 module.exports = mongoose.model("User", schema);
