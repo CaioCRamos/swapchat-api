@@ -12,9 +12,9 @@ const schema = new mongoose.Schema({
         required: true
     },
     messages: [{
-        user: {
-            type: String,
-            enum: ["usuario1", "usuario2"],
+        userAccount: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Account',
             required: true
         },
         message: {

@@ -16,6 +16,17 @@ exports.getAll = async (userAccountId) => {
                 { userAccount2: objId }
             ]
         });
-        // .populate("userAccount1", "id name email image")
-        // .populate("userAccount2", "id name email image");
+}
+
+exports.getById = async (chatId) => {
+    return await Chat.findById(chatId, "id userAccount1 userAccount2 messages");
+}
+
+exports.addMessages = async (id, messages) => {
+    await Chat
+        .findByIdAndUpdate(id, {
+            $set: {
+                messages: messages
+            }
+        });
 }

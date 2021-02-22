@@ -25,14 +25,9 @@ exports.getAll = async (userAccountId) => {
                 : "";
         }
 
-        result.ultimaMensagem = "";
-        result.mensagens = [];
-        chat.messages.forEach(message => {
-            result.mensagens.push({
-                usuario: message.user,
-                mensagem: message.message
-            });
-        });
+        result.ultimaMensagem = chat.messages.length > 0
+            ? chat.messages[chat.messages.length -1].message
+            : "";
 
         results.push(result);
     }
