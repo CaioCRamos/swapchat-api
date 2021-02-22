@@ -22,6 +22,7 @@ exports.getAll = async (userAccountId) => {
             });
         } else {
             result.push({
+                id: "",
                 nome: contact.name,
                 celular: contact.phone,
                 imagem: "",
