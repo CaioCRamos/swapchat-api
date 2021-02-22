@@ -35,29 +35,12 @@ exports.addAccounts = async (req, res) => {
 
         const accounts = [];
         contas.forEach(conta => {
-            let fileName = "";
-
-            if (conta.imagem !== "") {
-                const rawdata = conta.imagem;
-                const matches = rawdata.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-                const buffer = Buffer.from(matches[2], 'base64');
-                fileName = guid.raw() + ".png";
-
-                var dir = './images';
-
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir);
-                }
-
-                fs.writeFileSync(`./images/${fileName}`, buffer, 'base64', function (err) {
-                    console.log(err);
-                });
-            }
-
             accounts.push({
                 name: conta.nome,
                 email: conta.email,
-                image: fileName
+                image: conta.imagem !== ""
+                    ? new Buffer.from(conta.imagem.split(",")[1], 'base64')
+                    : null
             });
         });
 
@@ -72,17 +55,6 @@ exports.addAccounts = async (req, res) => {
             erro: error.message
         });
     }
-}
-
-exports.getImage = (req, res) => {
-    const { filename } = req.params;
-
-    const file = path.join("./images", filename);
-    const s = fs.createReadStream(file);
-    s.on('open', function () {
-        res.set('Content-Type', "image/png");
-        s.pipe(res);
-    });
 }
 
 exports.authenticate = async (req, res) => {
@@ -148,6 +120,28 @@ exports.getById = async (req, res) => {
     }
 }
 
+exports.getImage = async (req, res) => {
+    const { userAccountId } = req.params;
+    const filePath = `./images/${userAccountId}.png`;
+
+    if (!fs.existsSync(filePath)) {
+        const user = await repository.getByAccountId(userAccountId);
+
+        if (user !== null) {
+            const account = user.accounts.find(a => a.id === userAccountId);
+            fs.writeFileSync(filePath, account.image, 'base64', function (err) {
+                console.log(err);
+            });
+        }
+    }
+
+    const s = fs.createReadStream(filePath);
+    s.on('open', function () {
+        res.set('Content-Type', "image/png");
+        s.pipe(res);
+    });
+}
+
 function getAccounts(user) {
     const contas = [];
     user.accounts.forEach(account => {
@@ -156,7 +150,7 @@ function getAccounts(user) {
             nome: account.name,
             email: account.email,
             imagem: account.image !== ""
-                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
+                ? `${process.env.SERVER_URL}/v1/users/accounts/${account.id}/image`
                 : ""
         });
     })

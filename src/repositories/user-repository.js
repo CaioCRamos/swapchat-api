@@ -34,7 +34,7 @@ exports.getByPhone = async (phone) => {
     }, "id name phone accounts");
 }
 
-exports.getByAccountId = async  (userAccountId) => {
+exports.getByAccountId = async (userAccountId) => {
     var objId = new mongoose.Types.ObjectId(userAccountId);
 
     return await User.findOne({

@@ -21,7 +21,7 @@ exports.getAll = async (userAccountId) => {
 
             result.nome = `${user.name} (${account.name})`;
             result.image = account.image !== ""
-                ? `${process.env.SERVER_URL}/v1/users/accounts/image/${account.image}`
+                ? `${process.env.SERVER_URL}/v1/users/accounts/${account.id}/image`
                 : "";
         }
 

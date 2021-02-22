@@ -6,7 +6,7 @@ exports.create = async (data) => {
     await chat.save();
 }
 
-exports.getAll = async (userAccountId) => {
+exports.getAllByUserAccount = async (userAccountId) => {
     var objId = new mongoose.Types.ObjectId(userAccountId);
 
     return await Chat
@@ -28,5 +28,25 @@ exports.addMessages = async (id, messages) => {
             $set: {
                 messages: messages
             }
+        });
+}
+
+exports.getByUserAccounts = async (userAccount1, userAccount2) => {
+    var id1 = new mongoose.Types.ObjectId(userAccount1);
+    var id2 = new mongoose.Types.ObjectId(userAccount2);
+
+    return await Chat
+        .findOne({
+            $or: [{
+                $and: [
+                    { userAccount1: id1 },
+                    { userAccount2: id2 }
+                ]
+            }, {
+                $and: [
+                    { userAccount1: id2 },
+                    { userAccount2: id1 }
+                ]
+            }]
         });
 }

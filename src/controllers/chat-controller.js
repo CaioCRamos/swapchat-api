@@ -5,6 +5,15 @@ exports.create = async(req, res) => {
     try {
         const { idContaUsuario1, idContaUsuario2 } = req.body;
 
+        var chat = await repository.getByUserAccounts(idContaUsuario1, idContaUsuario2);
+
+        if (chat !== null) {
+            res.status(201).json({
+                mensagem: "Já existe uma conversa entre essas contas"
+            });
+            return;
+        }
+
         await repository.create({
             userAccount1: idContaUsuario1,
             userAccount2: idContaUsuario2
@@ -24,7 +33,7 @@ exports.create = async(req, res) => {
 exports.getAll = async(req, res) => {
     try {
         const { userAccountId } = req.params;
-        const results = await service.getAll(userAccountId);
+        const results = await service.getAllByUserAccount(userAccountId);
 
         res.status(200).json(results);
     } catch (error) {
@@ -63,6 +72,13 @@ exports.addMessage = async (req, res) => {
     try {
         const { idConversa, idContaUsuario, mensagem } = req.body;
         const chat = await repository.getById(idConversa);
+
+        if (mensagem === "") {
+            res.status(200).json({
+                mensagem: "Mensagem em branco"
+            });
+            return;
+        }
 
         if (chat !== null) {
             chat.messages.push({

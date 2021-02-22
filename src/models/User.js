@@ -45,7 +45,7 @@ const schema = new mongoose.Schema({
             maxlength: 100
         },
         image: {
-            type: String,
+            type: Buffer,
             required: false,
             trim: true
         }
