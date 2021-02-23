@@ -129,6 +129,13 @@ exports.getImage = async (req, res) => {
 
         if (user !== null) {
             const account = user.accounts.find(a => a.id === userAccountId);
+
+            var dir = './images';
+
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
+
             fs.writeFileSync(filePath, account.image, 'base64', function (err) {
                 console.log(err);
             });

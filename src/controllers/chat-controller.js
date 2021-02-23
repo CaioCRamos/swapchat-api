@@ -33,7 +33,7 @@ exports.create = async(req, res) => {
 exports.getAll = async(req, res) => {
     try {
         const { userAccountId } = req.params;
-        const results = await service.getAllByUserAccount(userAccountId);
+        const results = await repository.getAllByUserAccount(userAccountId);
 
         res.status(200).json(results);
     } catch (error) {
