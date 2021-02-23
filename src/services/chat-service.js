@@ -20,7 +20,7 @@ exports.getAll = async (userAccountId) => {
             const account = user.accounts.find(a => a.id === userAccountToSearch);
 
             result.nome = `${user.name} (${account.name})`;
-            result.image = account.image !== ""
+            result.imagem = account.image !== ""
                 ? `${process.env.SERVER_URL}/v1/users/accounts/${account.id}/image`
                 : "";
         }
