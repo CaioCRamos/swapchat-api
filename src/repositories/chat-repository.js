@@ -6,7 +6,7 @@ exports.create = async (data) => {
     await chat.save();
 }
 
-exports.getAllByUserAccount = async (userAccountId) => {
+exports.getAll = async (userAccountId) => {
     var objId = new mongoose.Types.ObjectId(userAccountId);
 
     return await Chat
