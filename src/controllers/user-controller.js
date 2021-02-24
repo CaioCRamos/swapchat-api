@@ -3,8 +3,6 @@ const authService = require("../services/auth-service");
 
 const md5 = require("md5");
 const fs = require("fs");
-const guid = require("guid");
-const path = require("path");
 
 exports.create = async (req, res) => {
     try {
