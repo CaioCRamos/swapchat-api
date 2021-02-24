@@ -37,6 +37,6 @@ exports.getAll = async (userAccountId) => {
 
 function formatLastMessage(message) {
     return message.length > 50
-        ? message.substring(50) + "..."
+        ? message.substring(0, 50) + "..."
         : message;
 }
