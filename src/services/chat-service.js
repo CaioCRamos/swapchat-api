@@ -13,24 +13,30 @@ exports.getAll = async (userAccountId) => {
         let userAccountToSearch = chat.userAccount1.toString() === userAccountId
             ? chat.userAccount2.toString()
             : chat.userAccount1.toString();
-        
+
         const user = await userRepository.getByAccountId(userAccountToSearch);
 
         if (user !== null) {
             const account = user.accounts.find(a => a.id === userAccountToSearch);
 
-            result.nome = `${user.name} (${account.name})`;
+            result.nome = account.name;
             result.imagem = account.image !== ""
                 ? `${process.env.SERVER_URL}/v1/users/accounts/${account.id}/image`
                 : "";
         }
 
         result.ultimaMensagem = chat.messages.length > 0
-            ? chat.messages[chat.messages.length -1].message
+            ? formatLastMessage(chat.messages[chat.messages.length - 1].message)
             : "";
 
         results.push(result);
     }
 
     return results;
+}
+
+function formatLastMessage(message) {
+    return message.length > 50
+        ? message.substring(50) + "..."
+        : message;
 }
