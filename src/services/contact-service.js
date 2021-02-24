@@ -21,7 +21,7 @@ exports.getAll = async (userAccountId) => {
             user.accounts.forEach(account => {
                 result.push({
                     id: account.id,
-                    nome: `${user.name} (${account.name})`,
+                    nome: account.name,
                     celular: user.phone,
                     imagem: account.image !== ""
                         ? `${process.env.SERVER_URL}/v1/users/accounts/${account.id}/image`
